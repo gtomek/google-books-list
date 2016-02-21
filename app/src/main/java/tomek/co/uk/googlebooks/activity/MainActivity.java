@@ -1,5 +1,6 @@
 package tomek.co.uk.googlebooks.activity;
 
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +26,9 @@ import tomek.co.uk.googlebooks.network.BooksService;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int MAX_API_RESULTS = 40;
+    private final String ARG_PAGE_START_INDEX = "arg_page_start_index";
+
     @Inject
     BooksService mBooksService;
 
@@ -35,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     View mProgressBar;
     private LinearLayoutManager mLayoutManager;
     private BooksAdapter mAdapter;
+    // start page index for the books API
+    private int mStartIndex;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +50,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(ARG_PAGE_START_INDEX)) {
+            mStartIndex = savedInstanceState.getInt(ARG_PAGE_START_INDEX);
+            Timber.v("Saved page index restored:%d", mStartIndex);
+        }
+
         setupRecyclerView();
-        getBooksSearchObservable(mBooksService).subscribe(getBooksSubscriber(mProgressBar,
+        getBooksSearchObservable(mBooksService, mStartIndex).subscribe(getBooksSubscriber(mProgressBar,
                 mRecyclerView, mAdapter));
     }
 
@@ -52,12 +64,13 @@ public class MainActivity extends AppCompatActivity {
      * Starts loading android books from the server.
      *
      * @param booksService
+     * @param startIndex
      */
-    private Observable<BooksSearchResponse> getBooksSearchObservable(final BooksService booksService) {
+    private Observable<BooksSearchResponse> getBooksSearchObservable(final BooksService booksService, int startIndex) {
 
         Timber.v("Requesting books list");
-
-        return booksService.getBooksList("android")
+        // TODO: 21/02/16 Add pagination support
+        return booksService.getBooksList("android", startIndex, MAX_API_RESULTS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -104,5 +117,11 @@ public class MainActivity extends AppCompatActivity {
         // specify an adapter (see also next example)
         mAdapter = new BooksAdapter();
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putInt(ARG_PAGE_START_INDEX, mStartIndex);
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 }

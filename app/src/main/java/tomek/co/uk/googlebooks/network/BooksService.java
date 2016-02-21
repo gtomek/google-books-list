@@ -13,5 +13,7 @@ import retrofit2.http.Query;
 public interface BooksService {
 
     @GET("/books/v1/volumes")
-    Observable<BooksSearchResponse> getBooksList(@Query("q") String bookSearchString);
+    Observable<BooksSearchResponse> getBooksList(@Query("q") String bookSearchString,
+                                                 @Query("startIndex") int startIndex,
+                                                 @Query("maxResults") int maxResults);
 }

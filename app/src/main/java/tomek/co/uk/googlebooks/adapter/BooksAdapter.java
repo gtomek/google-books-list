@@ -52,7 +52,6 @@ public class BooksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Timber.v("Item position:%d selected", positionInAdapter);
-                // TODO: 21/02/16 Add logic switching to the details screen
                 Context context = holder.itemView.getContext();
                 Intent intent = new Intent(context, BookDetailsActivity.class);
                 intent.putExtra(BookDetailsActivity.ARG_BOOK_INFO, item.getVolumeInfo());
