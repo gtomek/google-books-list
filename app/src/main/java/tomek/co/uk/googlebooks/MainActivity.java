@@ -1,5 +1,6 @@
 package tomek.co.uk.googlebooks;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -40,25 +42,36 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setupRecyclerView();
-        loadAndroidBooks(mBooksService, mProgressBar, mRecyclerView, mAdapter);
+        getBooksSearchObservable(mBooksService).subscribe(getBooksSubscriber(mProgressBar,
+                mRecyclerView, mAdapter));
     }
 
     /**
      * Starts loading android books from the server.
+     *
      * @param booksService
-     * @param progressBar
-     * @param recyclerView
-     * @param mAdapter
      */
-    private void loadAndroidBooks(final BooksService booksService,
-                                  final View progressBar,
-                                  final RecyclerView recyclerView,
-                                  final BooksAdapter adapter) {
+    private Observable<BooksSearchResponse> getBooksSearchObservable(final BooksService booksService) {
 
         Timber.v("Requesting books list");
 
-        booksService.getBooksList("android").subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<BooksSearchResponse>() {
+        return booksService.getBooksList("android")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * Returns subscriber to the books service.
+     *
+     * @param progressBar
+     * @param recyclerView
+     * @param adapter
+     */
+    @NonNull
+    private Subscriber<BooksSearchResponse> getBooksSubscriber(final View progressBar,
+                                                               final RecyclerView recyclerView,
+                                                               final BooksAdapter adapter) {
+        return new Subscriber<BooksSearchResponse>() {
             @Override
             public void onCompleted() {
                 Timber.v("get books completed");
@@ -78,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setVisibility(View.VISIBLE);
                 adapter.setData(booksSearchResponse.getItems());
             }
-        });
+        };
     }
 
     public void setupRecyclerView() {
