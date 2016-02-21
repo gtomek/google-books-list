@@ -3,6 +3,7 @@ package tomek.co.uk.googlebooks.dependency.component;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import tomek.co.uk.googlebooks.MainActivity;
 import tomek.co.uk.googlebooks.dependency.module.AndroidModule;
 import tomek.co.uk.googlebooks.dependency.module.MainDependencyModule;
 
@@ -16,4 +17,5 @@ import tomek.co.uk.googlebooks.dependency.module.MainDependencyModule;
         AndroidModule.class,
         MainDependencyModule.class})
 public interface MainComponent {
+    void inject(MainActivity mainActivity);
 }

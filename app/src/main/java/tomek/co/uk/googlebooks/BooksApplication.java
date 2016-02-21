@@ -1,6 +1,7 @@
 package tomek.co.uk.googlebooks;
 
 import android.app.Application;
+import android.content.Context;
 
 import tomek.co.uk.googlebooks.dependency.component.DaggerMainComponent;
 import tomek.co.uk.googlebooks.dependency.component.MainComponent;
@@ -40,4 +41,9 @@ public class BooksApplication extends Application {
     public MainComponent getApplicationComponent() {
         return mApplicationComponent;
     }
+
+    public static BooksApplication getAppContext(Context context) {
+        return (BooksApplication) context.getApplicationContext();
+    }
+
 }

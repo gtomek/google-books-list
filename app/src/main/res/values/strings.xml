@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">GoogleBooks</string>
-    <string name="google_api_url">www.googleapis.com</string>
+    <string name="google_api_url">https://www.googleapis.com</string>
+    <string name="network_error">Network error</string>
 </resources>

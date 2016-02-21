@@ -1,7 +1,7 @@
 package tomek.co.uk.googlebooks.network;
 
+import rx.Observable;
 import tomek.co.uk.googlebooks.model.BooksSearchResponse;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -12,6 +12,6 @@ import retrofit2.http.Query;
  */
 public interface BooksService {
 
-    @GET("/https://www.googleapis.com/books/v1/volumes?q=android")
-    Call<BooksSearchResponse> getBooksList(@Query("q") String bookSearchString);
+    @GET("/books/v1/volumes")
+    Observable<BooksSearchResponse> getBooksList(@Query("q") String bookSearchString);
 }
