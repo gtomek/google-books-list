@@ -1,10 +1,13 @@
 
 package tomek.co.uk.googlebooks.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class IndustryIdentifier {
+public class IndustryIdentifier implements Parcelable {
 
     @SerializedName("type")
     @Expose
@@ -49,4 +52,32 @@ public class IndustryIdentifier {
         this.identifier = identifier;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.type);
+        dest.writeString(this.identifier);
+    }
+
+    public IndustryIdentifier() {
+    }
+
+    protected IndustryIdentifier(Parcel in) {
+        this.type = in.readString();
+        this.identifier = in.readString();
+    }
+
+    public static final Parcelable.Creator<IndustryIdentifier> CREATOR = new Parcelable.Creator<IndustryIdentifier>() {
+        public IndustryIdentifier createFromParcel(Parcel source) {
+            return new IndustryIdentifier(source);
+        }
+
+        public IndustryIdentifier[] newArray(int size) {
+            return new IndustryIdentifier[size];
+        }
+    };
 }
