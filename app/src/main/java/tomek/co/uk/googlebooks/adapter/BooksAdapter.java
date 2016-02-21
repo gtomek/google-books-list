@@ -1,5 +1,7 @@
 package tomek.co.uk.googlebooks.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 import tomek.co.uk.googlebooks.R;
+import tomek.co.uk.googlebooks.activity.BookDetailsActivity;
 import tomek.co.uk.googlebooks.model.Item;
 import tomek.co.uk.googlebooks.model.VolumeInfo;
 
@@ -34,10 +37,10 @@ public class BooksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
         final int positionInAdapter = holder.getAdapterPosition();
-        Item item = mItems.get(positionInAdapter);
+        final Item item = mItems.get(positionInAdapter);
 
         VolumeInfo volumeInfo = item.getVolumeInfo();
         String thumbnail = volumeInfo.getImageLinks().getThumbnail();
@@ -50,6 +53,10 @@ public class BooksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             public void onClick(View v) {
                 Timber.v("Item position:%d selected", positionInAdapter);
                 // TODO: 21/02/16 Add logic switching to the details screen
+                Context context = holder.itemView.getContext();
+                Intent intent = new Intent(context, BookDetailsActivity.class);
+                intent.putExtra(BookDetailsActivity.ARG_BOOK_INFO, item.getVolumeInfo());
+                context.startActivity(intent);
             }
         });
     }

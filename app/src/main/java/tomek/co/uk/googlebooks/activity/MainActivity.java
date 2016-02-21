@@ -1,4 +1,4 @@
-package tomek.co.uk.googlebooks;
+package tomek.co.uk.googlebooks.activity;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +17,8 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+import tomek.co.uk.googlebooks.BooksApplication;
+import tomek.co.uk.googlebooks.R;
 import tomek.co.uk.googlebooks.adapter.BooksAdapter;
 import tomek.co.uk.googlebooks.model.BooksSearchResponse;
 import tomek.co.uk.googlebooks.network.BooksService;

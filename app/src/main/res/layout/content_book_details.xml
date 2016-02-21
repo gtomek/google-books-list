@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/space_small"
+        android:layout_marginRight="@dimen/space_small"
+        android:layout_marginTop="?android:actionBarSize"
+        android:orientation="vertical"
+        android:paddingBottom="?android:actionBarSize"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="tomek.co.uk.googlebooks.activity.BookDetailsActivity"
+        tools:showIn="@layout/activity_book_details">
+
+        <ImageView
+            android:id="@+id/book_image"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/book_deails_image_height"
+            android:contentDescription="@null" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/text_book_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_medium"
+            android:layout_marginTop="@dimen/space_medium"
+            android:textStyle="bold"
+            tools:text="Title" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/text_book_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Description" />
+
+
+    </LinearLayout>
+</ScrollView>
