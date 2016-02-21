@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GoogleBooks</string>
+    <string name="google_api_url">www.googleapis.com</string>
+</resources>
