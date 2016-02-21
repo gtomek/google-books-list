@@ -15,6 +15,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private BooksAdapter mAdapter;
     // start page index for the books API
     private int mStartIndex;
+    private Subscription mSubscription;
 
 
     @Override
@@ -56,8 +58,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setupRecyclerView();
-        getBooksSearchObservable(mBooksService, mStartIndex).subscribe(getBooksSubscriber(mProgressBar,
+        mSubscription = getBooksSearchObservable(mBooksService, mStartIndex).subscribe(getBooksSubscriber(mProgressBar,
                 mRecyclerView, mAdapter));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSubscription.unsubscribe();
     }
 
     /**
