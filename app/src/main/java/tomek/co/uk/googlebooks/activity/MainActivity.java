@@ -58,7 +58,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setupRecyclerView();
-        mSubscription = getBooksSearchObservable(mBooksService, mStartIndex).subscribe(getBooksSubscriber(mProgressBar,
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSubscription = getBooksSearchObservable(mBooksService, mStartIndex)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getBooksSubscriber(mProgressBar,
                 mRecyclerView, mAdapter));
     }
 
@@ -79,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         Timber.v("Requesting books list");
         // TODO: 21/02/16 Add pagination support
         return booksService.getBooksList("android", startIndex, MAX_API_RESULTS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io());
+
     }
 
     /**
