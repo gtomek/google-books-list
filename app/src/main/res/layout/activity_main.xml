@@ -5,10 +5,19 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/search_field"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize"
+        android:drawablePadding="@dimen/space_medium"
+        android:drawableStart="@drawable/ic_search_black_24dp"
+        android:hint="@string/start_typing_to_search_a_book" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="?android:actionBarSize"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -16,8 +25,9 @@
 
     <ProgressBar
         android:id="@+id/progress_bar"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
 </FrameLayout>
