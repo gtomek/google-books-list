@@ -35,13 +35,15 @@ android {
     }
 }
 
-final SUPPORT_LIBRARY_VERSION = '23.1.1'
+final SUPPORT_LIBRARY_VERSION = '23.2.0'
 final TIMBER_VERSION = '4.1.0'
 final BUTTERKNIFE_VERSION = '7.0.1'
 final RETROFIT_VERSION = '2.0.0-beta4'
 final DAGGER_VERSION = '2.0.2'
 final RXANDROID_VERSION = '1.1.0'
 final OK_HTTP_VERSION = '3.0.1'
+final RX_JAVA_VERSION = '1.1.1'
+final RX_BINDING_VERSION = '0.4.0'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -49,8 +51,9 @@ dependencies {
     // support libraries
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
-    //compile "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:recyclerview-v7:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:cardview-v7:${SUPPORT_LIBRARY_VERSION}"
 
     // View injection lib
     compile "com.jakewharton:butterknife:${BUTTERKNIFE_VERSION}"
@@ -63,14 +66,19 @@ dependencies {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     }
     compile "com.squareup.retrofit2:converter-gson:${RETROFIT_VERSION}"
-    compile "com.squareup.retrofit2:adapter-rxjava:${RETROFIT_VERSION}"
+    compile ("com.squareup.retrofit2:adapter-rxjava:${RETROFIT_VERSION}") { // exclude rx java and use its latest version
+        exclude group: 'io.reactivex:rxjava', module: 'rxjava'
+    }
     // HTTP client
     compile "com.squareup.okhttp3:okhttp:${OK_HTTP_VERSION}"
     compile "com.squareup.okhttp3:logging-interceptor:${OK_HTTP_VERSION}"
 
-    compile("io.reactivex:rxandroid:${RXANDROID_VERSION}") {
+    compile("io.reactivex:rxandroid:${RXANDROID_VERSION}") { // exclude rx java and use its latest version
         exclude group: 'io.reactivex:rxjava', module: 'rxjava'
     }
+    compile "io.reactivex:rxjava:${RX_JAVA_VERSION}"
+    // Rx Java bindings to standard Android views
+    compile "com.jakewharton.rxbinding:rxbinding:${RX_BINDING_VERSION}"
 
     // Dependency injection lib
     compile "com.google.dagger:dagger:${DAGGER_VERSION}"
@@ -80,5 +88,4 @@ dependencies {
     // Image loading lib
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
-    compile 'com.android.support:design:23.1.1'
 }

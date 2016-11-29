@@ -7,7 +7,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import com.jakewharton.rxbinding.widget.RxTextView;
+import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -17,6 +23,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 import tomek.co.uk.googlebooks.BooksApplication;
@@ -28,6 +35,8 @@ import tomek.co.uk.googlebooks.network.BooksService;
 public class MainActivity extends AppCompatActivity {
 
     private static final int MAX_API_RESULTS = 40;
+    private static final int MIN_SEARCH_TERM_LENGTH = 2;
+    private static final long SEARCH_QUERY_UPDATE_DELAY = 400;
     private final String ARG_PAGE_START_INDEX = "arg_page_start_index";
 
     @Inject
@@ -38,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.progress_bar)
     View mProgressBar;
+
+    @Bind(R.id.search_field)
+    EditText mSearchField;
+
     private LinearLayoutManager mLayoutManager;
     private BooksAdapter mAdapter;
     // start page index for the books API
@@ -58,8 +71,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setupRecyclerView();
-        mSubscription = getBooksSearchObservable(mBooksService, mStartIndex).subscribe(getBooksSubscriber(mProgressBar,
-                mRecyclerView, mAdapter));
+
+        mSubscription = getSearchFieldObservable(mSearchField, mProgressBar)
+                .flatMap(new Func1<String, Observable<BooksSearchResponse>>() {
+                    @Override
+                    public Observable<BooksSearchResponse> call(String searchTerm) {
+                        return getBooksSearchObservable(mBooksService, mStartIndex, searchTerm);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getBooksSubscriber(mProgressBar,
+                        mRecyclerView, mAdapter));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mSubscription.isUnsubscribed()) {
+            // FIXME: 28/02/16 try to subscribe here? instead of onCreate
+            Timber.w("Warning, problem detected,");
+        }
+
+
     }
 
     @Override
@@ -68,19 +101,48 @@ public class MainActivity extends AppCompatActivity {
         mSubscription.unsubscribe();
     }
 
+
+    /**
+     * Get search field observable.
+     *
+     * @return observable to the search field
+     */
+    private Observable<String> getSearchFieldObservable(final  EditText searchField, final View progressBar) {
+        return RxTextView.afterTextChangeEvents(searchField)
+                .map(new Func1<TextViewAfterTextChangeEvent, String>() {
+                    @Override
+                    public String call(TextViewAfterTextChangeEvent textViewAfterTextChangeEvent) {
+                        return textViewAfterTextChangeEvent.editable().toString().trim(); // remove empty spaces
+                    }
+                })
+                .filter(new Func1<String, Boolean>() { // check if search term is long enough
+                    @Override
+                    public Boolean call(String searchString) {
+                        boolean isLongEnough = searchString.length() > MIN_SEARCH_TERM_LENGTH;
+                        if (isLongEnough) {
+                            progressBar.setVisibility(View.VISIBLE);
+                        }
+                        return isLongEnough;
+                    }
+                })
+                .debounce(SEARCH_QUERY_UPDATE_DELAY, TimeUnit.MILLISECONDS); // prevent too quick typing
+
+    }
+
     /**
      * Starts loading android books from the server.
      *
      * @param booksService
      * @param startIndex
      */
-    private Observable<BooksSearchResponse> getBooksSearchObservable(final BooksService booksService, int startIndex) {
+    private Observable<BooksSearchResponse> getBooksSearchObservable(final BooksService booksService,
+                                                                     int startIndex,
+                                                                     final String searchTerm) {
 
         Timber.v("Requesting books list");
         // TODO: 21/02/16 Add pagination support
-        return booksService.getBooksList("android", startIndex, MAX_API_RESULTS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return booksService.getBooksList(searchTerm, startIndex, MAX_API_RESULTS)
+                .subscribeOn(Schedulers.io());
     }
 
     /**
@@ -102,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
+                Timber.e("get books error:%s", e.getMessage());
                 progressBar.setVisibility(View.GONE);
-                Timber.e("get books error:%s", e);
                 Toast.makeText(getApplicationContext(), R.string.network_error, Toast.LENGTH_LONG).show();
             }
 

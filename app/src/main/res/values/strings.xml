@@ -3,4 +3,5 @@
     <string name="google_api_url">https://www.googleapis.com</string>
     <string name="network_error">Network error</string>
     <string name="title_activity_book_details">BookDetailsActivity</string>
+    <string name="start_typing_to_search_a_book">Start typing to search for a book</string>
 </resources>
